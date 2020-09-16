@@ -23,6 +23,9 @@ function Tile:init(x, y, color, variety)
     self.y = (self.gridY - 1) * 32
 
     self.shiny = false
+    if(math.random(10)) == 1 then
+        self.shiny = true 
+    end
     -- tile appearance/points
     self.color = color
     self.variety = variety
@@ -41,12 +44,19 @@ end
 
 function Tile:render(x, y)
     -- draw shadow
+  
     love.graphics.setColor(34, 32, 52, 255)
     love.graphics.draw(gTextures['main'], gFrames['tiles'][self.color][self.variety],
         self.x + x + 2, self.y + y + 2)
 
-    -- draw tile itself
+    --render shiny
+    if( self.shiny == true) then        
+        love.graphics.setColor(255, 215, 0, 255)
+        love.graphics.rectangle("line", self.x + x + 1 , self.y + y + 1, 30, 30)
+    end
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.draw(gTextures['main'], gFrames['tiles'][self.color][self.variety],
         self.x + x, self.y + y)
+
+    
 end

@@ -176,9 +176,11 @@ end
     have matched and replaces them with new randomized tiles, deferring most of this
     to the Board class.
 
-    Implementing shiny 
-
-
+    Implementing shiny tiles:
+    Randomly generating shiny tiles
+    If a match is found that includes a shiny tile, remove the entire row the tile is on
+    Give points for the entire row
+    Then do the same procedure for a match, moving everything downwards and generating new points that tween downwards
 
 
     ]]
