@@ -175,6 +175,7 @@ end
     tiles to their new destinations if so. Also removes tiles from the board that
     have matched and replaces them with new randomized tiles, deferring most of this
     to the Board class.
+<<<<<<< HEAD
 
     Implementing shiny tiles:
     Randomly generating shiny tiles
@@ -187,6 +188,9 @@ end
 
 
 
+=======
+]]
+>>>>>>> parent of c17d562... Timer increase and variety scaling with level implemented
 function PlayState:calculateMatches()
     self.highlightedTile = nil
 
@@ -200,7 +204,6 @@ function PlayState:calculateMatches()
         -- add score for each match
         for k, match in pairs(matches) do
             self.score = self.score + #match * 50
-            self.timer = self.timer + 1
         end
 
         -- remove any tiles that matched from the board, making empty spaces
