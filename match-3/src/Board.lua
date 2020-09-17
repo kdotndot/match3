@@ -91,7 +91,6 @@ function Board:calculateMatches()
                     if shinycheck == true then
                         for temp = 1, 8 do
                             table.insert(match, self.tiles[y][temp])
-                            shinycheck = false
                         end
                     -- go backwards from end of last row by matchNum
                     else 
@@ -101,6 +100,7 @@ function Board:calculateMatches()
                     end
                     -- add this match to our total matches table
                     table.insert(matches, match)
+                    shinycheck = false
                 end
 
                 -- don't need to check last two if they won't be in a match
@@ -139,28 +139,31 @@ function Board:calculateMatches()
         for y = 2, 8 do
             if self.tiles[y][x].color == colorToMatch then
                 matchNum = matchNum + 1
-                if self.tiles[x][y].shiny == true then
+                if self.tiles[y][x].shiny == true then
                     shinycheck = true
-                    shinyRow = x
+                    shinyRow = y
                 end
             else
                 colorToMatch = self.tiles[y][x].color
 
                 if matchNum >= 3 then
                     local match = {}
-
+                    
+                    -- if there is a match that includes shiny
+                    -- insert every block in the shinyrow into match
                     if shinycheck == true then
                         for temp = 1, 8 do
-                            table.insert(match,self.tiles[y][shinyRow])
+                            table.insert(match, self.tiles[shinyRow][temp])
+                        end
+                    else 
+                        for y2 = y - 1, y - matchNum, - 1 do
+                            table.insert(match, self.tiles[y2][x])
                         end
                     end
-                    for y2 = y - 1, y - matchNum, -1 do
-                        table.insert(match, self.tiles[y2][x])
-                    end
+                    table.insert(matches, match)
                     shinycheck = false
                     shinyRow = 0
-                    table.insert(matches, match)
-                end
+                end 
 
                 matchNum = 1
 
