@@ -22,13 +22,10 @@ function Tile:init(x, y, color, variety)
     self.x = (self.gridX - 1) * 32
     self.y = (self.gridY - 1) * 32
 
-<<<<<<< HEAD
     self.shiny = false
-    if(math.random(10)) == 1 then
+    if(math.random(5)) == 1 then
         self.shiny = true 
     end
-=======
->>>>>>> parent of c17d562... Timer increase and variety scaling with level implemented
     -- tile appearance/points
     self.color = color
     self.variety = variety
@@ -61,5 +58,4 @@ function Tile:render(x, y)
     love.graphics.draw(gTextures['main'], gFrames['tiles'][self.color][self.variety],
         self.x + x, self.y + y)
 
-    
 end

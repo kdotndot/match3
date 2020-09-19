@@ -13,11 +13,11 @@
 
 Board = Class{}
 
-function Board:init(x, y)
+function Board:init(x, y, level)
     self.x = x
     self.y = y
     self.matches = {}
-
+    self.level = level 
     self:initializeTiles()
 end
 
@@ -31,7 +31,8 @@ function Board:initializeTiles()
 
         for tileX = 1, 8 do
             -- create a new tile at X,Y with a random color and variety
-            table.insert(self.tiles[tileY], Tile(tileX, tileY, math.random(18), math.random(6)))
+           table.insert(self.tiles[tileY], Tile(tileX, tileY, math.random(18), math.random(self.level)))
+            
         end
     end
 
@@ -46,55 +47,50 @@ end
     Goes left to right, top to bottom in the board, calculating matches by counting consecutive
     tiles of the same color. Doesn't need to check the last tile in every row or column if the 
     last two haven't been a match.
-
-    Shiny implementation
-    For each horizontal row, if there is a match w shiny, add that row to the matches array
-    
-    For each vertical column, if there is a match w shiny, keep track of that row, add that row to matches
-
-
 ]]
 function Board:calculateMatches()
     local matches = {}
 
     -- how many of the same color blocks in a row we've found
     local matchNum = 1
+    local shinycheck = false
+    local shinyrow = 0 
 
     -- horizontal matches first
     for y = 1, 8 do
         local colorToMatch = self.tiles[y][1].color
-        local shinycheck = false
+
         matchNum = 1
         if self.tiles[y][1].shiny == true then
-            shinycheck = true 
+            shinycheck = true
         end
-        
         -- every horizontal tile
         for x = 2, 8 do
             -- if this is the same color as the one we're trying to match...
+            if self.tiles[y][x].shiny == true then
+                shinycheck = true
+            end
             
             if self.tiles[y][x].color == colorToMatch then
                 matchNum = matchNum + 1
-                if self.tiles[y][x].shiny == true then
-                    shinycheck = true
-                end
             else
                 -- set this as the new color we want to watch for
                 colorToMatch = self.tiles[y][x].color
-
                 -- if we have a match of 3 or more up to now, add it to our matches table
                 if matchNum >= 3 then
                     local match = {}
-                    
-                    --if shiny check is included in a match
+
+
+                    --if there is a shiny match, add the whole row into matches
                     if shinycheck == true then
                         for temp = 1, 8 do
                             table.insert(match, self.tiles[y][temp])
                         end
-                    -- go backwards from end of last row by matchNum
-                    else 
-                        for y = 8, 8 - matchNum, -1 do
-                            table.insert(match, self.tiles[y][x])
+                    else
+                        -- go backwards from here by matchNum
+                        for x2 = x - 1, x - matchNum, -1 do
+                            -- add each tile to the match that's in that match
+                            table.insert(match, self.tiles[y][x2])
                         end
                     end
                     -- add this match to our total matches table
@@ -127,62 +123,95 @@ function Board:calculateMatches()
     -- vertical matches
     for x = 1, 8 do
         local colorToMatch = self.tiles[1][x].color
-        local shinycheck = false
-        local shinyRow = 0
         matchNum = 1
+
         if self.tiles[1][x].shiny == true then
             shinycheck = true
-            shinyRow = 1
+            shinyrow = 1
         end
+        
         -- every vertical tile
         for y = 2, 8 do
+            if self.tiles[y][x].shiny == true then
+                shinycheck = true
+                shinyrow = y 
+            end
             if self.tiles[y][x].color == colorToMatch then
                 matchNum = matchNum + 1
-                if self.tiles[y][x].shiny == true then
-                    shinycheck = true
-                    shinyRow = y
-                end
             else
                 colorToMatch = self.tiles[y][x].color
 
+                
+
                 if matchNum >= 3 then
                     local match = {}
-                    
-                    -- if there is a match that includes shiny
-                    -- insert every block in the shinyrow into match
-                    if shinycheck == true then
-                        for temp = 1, 8 do
-                            table.insert(match, self.tiles[shinyRow][temp])
-                        end
-                    else 
-                        for y2 = y - 1, y - matchNum, - 1 do
-                            table.insert(match, self.tiles[y2][x])
-                        end
-                    end
-                    table.insert(matches, match)
-                    shinycheck = false
-                    shinyRow = 0
-                end 
 
+                    --if shiny in vertical match
+                    --add the row of shiny row into match
+                    
+                    if shinycheck == true then
+                        for temp1 = 1,8 do
+                            table.insert(match,self.tiles[shinyrow][temp1])
+                        end
+                        shinycheck = false
+                        shinyrow = 0
+                    end
+
+                    for y2 = y - 1, y - matchNum, -1 do
+                        table.insert(match, self.tiles[y2][x])
+                    end
+
+                    table.insert(matches, match)
+                else
+                    shinycheck = false
+                    shinyrow = 0
+                    if self.tiles[y][x].shiny == true then
+                        shinycheck = true
+                        shinyrow = y 
+                    end
+
+                end
+                
+                
                 matchNum = 1
+
 
                 -- don't need to check last two if they won't be in a match
                 if y >= 7 then
                     break
                 end
             end
+
         end
 
         -- account for the last column ending with a match
         if matchNum >= 3 then
             local match = {}
+
+            --if shiny in vertical match
+            --add the row of shiny row into match
             
-            -- go backwards from end of last row by matchNum
-            for y = 8, 8 - matchNum, -1 do
-                table.insert(match, self.tiles[y][x])
+            if shinycheck == true then
+                for temp1 = 1,8 do
+                    table.insert(match,self.tiles[shinyrow][temp1])
+                end
+                shinycheck = false
+                shinyrow = 0
+            end
+
+            for y2 = y - 1, y - matchNum, -1 do
+                table.insert(match, self.tiles[y2][x])
             end
 
             table.insert(matches, match)
+        else
+            shinycheck = false
+            shinyrow = 0
+            if self.tiles[y][x].shiny == true then
+                shinycheck = true
+                shinyrow = y 
+            end
+
         end
     end
 
@@ -264,7 +293,7 @@ function Board:getFallingTiles()
 
             -- if the tile is nil, we need to add a new one
             if not tile then
-                local tile = Tile(x, y, math.random(18), math.random(6))
+                local tile = Tile(x, y, math.random(18), math.random(self.level))
                 tile.y = -32
                 self.tiles[y][x] = tile
 

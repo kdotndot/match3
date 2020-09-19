@@ -68,6 +68,16 @@ function PlayState:enter(params)
     self.scoreGoal = self.level * 1.25 * 1000
 end
 
+
+
+
+
+
+
+
+
+
+
 function PlayState:update(dt)
     if love.keyboard.wasPressed('escape') then
         love.event.quit()
@@ -175,22 +185,16 @@ end
     tiles to their new destinations if so. Also removes tiles from the board that
     have matched and replaces them with new randomized tiles, deferring most of this
     to the Board class.
-<<<<<<< HEAD
 
-    Implementing shiny tiles:
-    Randomly generating shiny tiles
-    If a match is found that includes a shiny tile, remove the entire row the tile is on
-    Give points for the entire row
-    Then do the same procedure for a match, moving everything downwards and generating new points that tween downwards
+    Implementing shiny 
+
+
 
 
     ]]
 
 
 
-=======
-]]
->>>>>>> parent of c17d562... Timer increase and variety scaling with level implemented
 function PlayState:calculateMatches()
     self.highlightedTile = nil
 
@@ -204,6 +208,7 @@ function PlayState:calculateMatches()
         -- add score for each match
         for k, match in pairs(matches) do
             self.score = self.score + #match * 50
+            self.timer = self.timer + 3
         end
 
         -- remove any tiles that matched from the board, making empty spaces
