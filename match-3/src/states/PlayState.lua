@@ -1,12 +1,9 @@
 --[[
     GD50
     Match-3 Remake
-
     -- PlayState Class --
-
     Author: Colton Ogden
     cogden@cs50.harvard.edu
-
     State in which we can actually play, moving around a grid cursor that
     can swap two tiles; when two tiles make a legal swap (a swap that results
     in a valid match), perform the swap and destroy all matched tiles, adding
@@ -38,6 +35,8 @@ function PlayState:init()
     self.score = 0
     self.timer = 60
 
+    self.test = false
+
     -- set our Timer class to turn cursor highlight on and off
     Timer.every(0.5, function()
         self.rectHighlighted = not self.rectHighlighted
@@ -67,10 +66,6 @@ function PlayState:enter(params)
     -- score we have to reach to get to the next level
     self.scoreGoal = self.level * 1.25 * 1000
 end
-
-
-
-
 
 
 
@@ -147,31 +142,63 @@ function PlayState:update(dt)
                 gSounds['error']:play()
                 self.highlightedTile = nil
             else
-                -- swap grid positions of tiles
-                local tempX = self.highlightedTile.gridX
-                local tempY = self.highlightedTile.gridY
 
-                local newTile = self.board.tiles[y][x]
+                    -- swap grid positions of tiles
+                    local tempX = self.highlightedTile.gridX
+                    local tempY = self.highlightedTile.gridY
 
-                self.highlightedTile.gridX = newTile.gridX
-                self.highlightedTile.gridY = newTile.gridY
-                newTile.gridX = tempX
-                newTile.gridY = tempY
+                    local newTile = self.board.tiles[y][x]
 
-                -- swap tiles in the tiles table
-                self.board.tiles[self.highlightedTile.gridY][self.highlightedTile.gridX] =
-                    self.highlightedTile
+                    self.highlightedTile.gridX = newTile.gridX
+                    self.highlightedTile.gridY = newTile.gridY
+                    newTile.gridX = tempX
+                    newTile.gridY = tempY
 
-                self.board.tiles[newTile.gridY][newTile.gridX] = newTile
+                    -- swap tiles in the tiles table
+                    self.board.tiles[self.highlightedTile.gridY][self.highlightedTile.gridX] =
+                        self.highlightedTile
 
-                -- tween coordinates between the two so they swap
-                Timer.tween(0.1, {
-                    [self.highlightedTile] = {x = newTile.x, y = newTile.y},
-                    [newTile] = {x = self.highlightedTile.x, y = self.highlightedTile.y}
-                })
-                -- once the swap is finished, we can tween falling blocks as needed
+                    self.board.tiles[newTile.gridY][newTile.gridX] = newTile
+
+                    -- tween coordinates between the two so they swap
+                    Timer.tween(0.1, {
+                        [self.highlightedTile] = {x = newTile.x, y = newTile.y},
+                        [newTile] = {x = self.highlightedTile.x, y = self.highlightedTile.y}
+                    })
+
+
+                 -- once the swap is finished, we can tween falling blocks as needed
+
                 :finish(function()
+                    if self.board:calculateMatches() == false then
+                        tempX = self.highlightedTile.gridX
+                        tempY = self.highlightedTile.gridY
+                        
+                    
+                        
+                        
+                        self.highlightedTile.gridX = newTile.gridX
+                        self.highlightedTile.gridY = newTile.gridY
+                        newTile.gridX = tempX
+                        newTile.gridY = tempY
+
+                        -- swap tiles in the tiles table
+                        self.board.tiles[self.highlightedTile.gridY][self.highlightedTile.gridX] =
+                            self.highlightedTile
+
+                        self.board.tiles[newTile.gridY][newTile.gridX] = newTile
+                        
+                        Timer.tween(0.2, {
+                            [self.highlightedTile] = {x = newTile.x, y = newTile.y},
+                            [newTile] = {x = self.highlightedTile.x, y = self.highlightedTile.y}
+                        })
+                    end
+                    
                     self:calculateMatches()
+                    
+                    
+                    
+
                 end)
             end
         end
@@ -185,12 +212,7 @@ end
     tiles to their new destinations if so. Also removes tiles from the board that
     have matched and replaces them with new randomized tiles, deferring most of this
     to the Board class.
-
     Implementing shiny 
-
-
-
-
     ]]
 
 
@@ -274,4 +296,9 @@ function PlayState:render()
     love.graphics.printf('Score: ' .. tostring(self.score), 20, 52, 182, 'center')
     love.graphics.printf('Goal : ' .. tostring(self.scoreGoal), 20, 80, 182, 'center')
     love.graphics.printf('Timer: ' .. tostring(self.timer), 20, 108, 182, 'center')
+
+    if self.test == true then
+        love.graphics.setColor(0, 0, 0, 255)
+        love.graphics.rectangle('line', 32, 32, 100, 100)
+    end
 end

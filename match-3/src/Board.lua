@@ -1,12 +1,9 @@
 --[[
     GD50
     Match-3 Remake
-
     -- Board Class --
-
     Author: Colton Ogden
     cogden@cs50.harvard.edu
-
     The Board is our arrangement of Tiles with which we must try to find matching
     sets of three horizontally or vertically.
 ]]
@@ -207,11 +204,6 @@ function Board:calculateMatches()
         else
             shinycheck = false
             shinyrow = 0
-            if self.tiles[y][x].shiny == true then
-                shinycheck = true
-                shinyrow = y 
-            end
-
         end
     end
 
